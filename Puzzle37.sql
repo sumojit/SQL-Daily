@@ -1,0 +1,10 @@
+/*
+--https://msbiskills.com/2015/03/31/t-sql-query-the-missing-numbers-puzzle/
+*/
+WITH CTE_NUM1 AS
+(
+SELECT TOP 1 ID FROM MissingNumbers ORDER BY ID
+UNION ALL
+SELECT ID+1 ID FROM CTE_NUM1 C1 WHERE EXISTS(SELECT M.ID FROM MissingNumbers M WHERE C1.ID<M.ID)
+)
+SELECT COALESCE(C1.ID,MN.ID) ID FROM CTE_NUM1 C1 LEFT OUTER JOIN MissingNumbers MN ON C1.ID=MN.ID
