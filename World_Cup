@@ -1,0 +1,39 @@
+create table icc_world_cup
+(
+Team_1 Varchar(20),
+Team_2 Varchar(20),
+Winner Varchar(20)
+);
+
+SELECT * FROM icc_world_cup
+INSERT INTO icc_world_cup values('India','SL','India');
+INSERT INTO icc_world_cup values('SL','Aus','Aus');
+INSERT INTO icc_world_cup values('SA','Eng','Eng');
+INSERT INTO icc_world_cup values('Eng','NZ','NZ');
+INSERT INTO icc_world_cup values('Aus','India','India');
+
+
+;WITH CTE_WON_CNT
+AS
+(
+SELECT 
+Team_1,
+COUNT(TEAM_1) NO_OF_MATCHES,
+SUM(WIN_FLG) NO_WINS,
+COUNT(TEAM_1)-SUM(WIN_FLG) NO_OF_LOSSES
+FROM
+(
+SELECT 
+Team_1,CASE WHEN Team_1=WINNER THEN 1 ELSE 0 END WIN_FLG
+FROM icc_world_cup
+
+UNION ALL
+
+SELECT 
+Team_2,CASE WHEN Team_2=WINNER THEN 1 ELSE 0 END WIN_FLG
+FROM icc_world_cup
+)PVT
+GROUP BY Team_1
+)
+
+SELECT * FROM CTE_WON_CNT
