@@ -1,0 +1,36 @@
+create table customer_orders (
+order_id integer,
+customer_id integer,
+order_date date,
+order_amount integer
+);
+
+insert into customer_orders values(1,100,cast('2022-01-01' as date),2000),(2,200,cast('2022-01-01' as date),2500),(3,300,cast('2022-01-01' as date),2100)
+,(4,100,cast('2022-01-02' as date),2000),(5,400,cast('2022-01-02' as date),2200),(6,500,cast('2022-01-02' as date),2700)
+,(7,100,cast('2022-01-03' as date),3000),(8,400,cast('2022-01-03' as date),1000),(9,600,cast('2022-01-03' as date),3000)
+
+
+select * from customer_orders
+
+--FINDING NEW AND REPEAT CUSTOMERS..............
+
+SELECT ORDER_DATE,SUM(NEW_CUST) NEW_CUST,SUM(OLD_CUST) OLD_CUST
+FROM
+(
+
+SELECT ORDER_DATE,
+CASE WHEN REPEAT_FLG=0 THEN COUNT(*) ELSE 0 END NEW_CUST,
+CASE WHEN REPEAT_FLG=1 THEN COUNT(*) ELSE 0 END OLD_CUST
+FROM(
+SELECT 
+order_date,
+ORDER_AMOUNT, CASE WHEN 
+ROW_NUMBER() OVER(PARTITION BY CUSTOMER_ID ORDER BY ORDER_DATE)>1 THEN 1 ELSE 0 
+END
+REPEAT_FLG
+
+FROM
+customer_orders)PVT
+GROUP BY order_date,REPEAT_FLG
+) PVT1
+GROUP BY order_date
